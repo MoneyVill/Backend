@@ -1,46 +1,57 @@
 import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import User from "../models/User";
+import jwt, { JwtPayload, TokenExpiredError, JsonWebTokenError } from "jsonwebtoken";
+import Teacher from "../models/Teacher";
 import asyncHandler from "express-async-handler";
 import { AuthenticationError } from "./errorMiddleware";
 
-const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    let token = req.cookies.jwt;
-
-    if (!token) {
-      throw new AuthenticationError("Token not found");
-    }
-
-    const jwtSecret = process.env.JWT_SECRET || "";
-    const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
-
-    if (!decoded || !decoded.userId || !decoded.userEmail) {
-      throw new AuthenticationError("User not found");
-    }
-
-    const { userId, userEmail, roles } = decoded;
-
-    req.user = { _id: userId, email: userEmail, roles };
-    next();
-  } catch (e) {
-    throw new AuthenticationError("Invalid token");
+// Extend the Request interface to include user property
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: {
+      _id: string;
+      name: string;
+      nickname: string;
+      role: boolean;
+    };
   }
-};
+}
 
-const authorize = (allowedRoles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const userRoles = req.user?.roles;
+const authenticate = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // Extract token from cookies or Authorization header
+      let token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
 
-    if (
-      !userRoles ||
-      !userRoles.some((role: string) => allowedRoles.includes(role))
-    ) {
-      return res.status(403).json({ message: "Access denied" });
+      if (!token) {
+        throw new AuthenticationError("Token not found");
+      }
+
+      const jwtSecret = process.env.JWT_SECRET || "";
+      const decoded = jwt.verify(token, jwtSecret) as JwtPayload;
+
+      if (!decoded || !decoded.userId) {
+        throw new AuthenticationError("UserId not found");
+      }
+
+      // Fetch user with selected fields
+      const user = await Teacher.findById(decoded.userId, "_id name nickname");
+
+      if (!user) {
+        throw new AuthenticationError("User not found");
+      }
+
+      req.user = user;
+      next();
+    } catch (error) {
+      if (error instanceof TokenExpiredError) {
+        throw new AuthenticationError("Token expired");
+      } else if (error instanceof JsonWebTokenError) {
+        throw new AuthenticationError("Invalid token format or signature");
+      } else {
+        throw new AuthenticationError("Invalid token");
+      }
     }
+  }
+);
 
-    next();
-  };
-};
-
-export { authenticate, authorize };
+export { authenticate };
