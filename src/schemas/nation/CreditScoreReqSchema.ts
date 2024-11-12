@@ -1,4 +1,4 @@
-// src/models/nation/CreditScoreReq.ts
+
 
 import { Schema, model, Document } from 'mongoose';
 

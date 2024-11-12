@@ -1,15 +1,15 @@
 {
-    "compilerOptions": {
-      "target": "es6",                           // 컴파일된 코드의 JavaScript 버전
-      "module": "commonjs",                       // 모듈 시스템
-      "rootDir": "./Back-end/api-module/src",     // 소스 파일의 루트 디렉토리 (경로 수정)
-      "outDir": "./Back-end/api-module/dist",     // 컴파일된 파일이 저장될 폴더 (경로 수정)
-      "strict": true,                             // 엄격한 타입 검사
-      "esModuleInterop": true,                    // ES 모듈 가져오기 지원
-      "skipLibCheck": true,                       // 외부 라이브러리 타입 검사 생략
-      "forceConsistentCasingInFileNames": true    // 파일 이름 대소문자 일관성 확인
-    },
-    "include": ["Back-end/api-module/src/**/*.ts"],  // 컴파일 대상 포함 파일
-    "exclude": ["node_modules", "dist"]             // 컴파일에서 제외할 폴더
-  }
-  
+  "compilerOptions": {
+    "target": "es6",                           // 컴파일된 코드의 JavaScript 버전
+    "module": "commonjs",                       // 모듈 시스템
+    "rootDir": "./src",                         // 소스 파일의 루트 디렉토리 (현재 src 폴더를 기준으로 설정)
+    "outDir": "./dist",                         // 컴파일된 파일이 저장될 폴더 (dist 폴더로 설정)
+    "strict": true,                             // 엄격한 타입 검사
+    "esModuleInterop": true,                    // ES 모듈 가져오기 지원
+    "skipLibCheck": true,                       // 외부 라이브러리 타입 검사 생략
+    "forceConsistentCasingInFileNames": true,   // 파일 이름 대소문자 일관성 확인
+    "typeRoots": ["./node_modules/@types"]     // 커스텀 타입 경로 설정
+  },
+  "include": ["src/**/*.ts"],   // 현재 src 폴더 내의 모든 TypeScript 파일을 포함
+  "exclude": ["node_modules", "dist"]             // 컴파일에서 제외할 폴더
+}
