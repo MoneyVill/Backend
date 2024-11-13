@@ -67,21 +67,4 @@ const authenticateStudent = asyncHandler(async (req: Request, res: Response) => 
   }
 });
 
-const StudentIdDuplicateCheck = asyncHandler(async (req: Request, res: Response) => {
-  const { nickname } = req.body;
-
-  try {
-    const studentExists = await Student.findOne({ nickname });
-    if (studentExists) {
-      res.status(409).json({ message: "The nickname already exists" });
-      return; // Prevents further execution
-    }
-    // Send response if nickname does not exist
-    res.status(200).json({ message: "Nickname is available" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error while checking nickname", error });
-    return;
-  }
-});
-
-export { signupStudent, authenticateStudent, StudentIdDuplicateCheck };
+export { signupStudent, authenticateStudent };

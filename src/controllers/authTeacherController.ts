@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import Teacher from "../models/Teacher";
+import Student from "../models/Student";
+
 import { generateToken} from "../utils/auth";
 import {
   BadRequestError,
@@ -56,18 +58,24 @@ const authenticateTeacher = asyncHandler(async (req: Request, res: Response) => 
   }
 });
 
-const TeacherIdDuplicateCheck = asyncHandler(async (req: Request, res: Response) => {
+const IdDuplicateCheck = asyncHandler(async (req: Request, res: Response) => {
   const { nickname } = req.body;
 
   try {
     const teacherExists = await Teacher.findOne({ nickname });
-    if (teacherExists) {
+    const studentExists = await Student.findOne({ nickname});
+    if (teacherExists || studentExists) {
       res.status(409).json({ message: "The nickname already exists" });
       return; // Prevents further execution
     }
+    else {
+      res.status(200).json({isDuplicated: false});
+    }
+
   } catch (error) {
     res.status(500).json({ message: "Server error while checking nickname", error });
   }
 });
 
-export { signupTeacher, authenticateTeacher, TeacherIdDuplicateCheck};
+export { signupTeacher, authenticateTeacher, IdDuplicateCheck};
+
