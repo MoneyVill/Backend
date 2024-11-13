@@ -59,12 +59,10 @@ const authenticateTeacher = asyncHandler(async (req: Request, res: Response) => 
 });
 
 const IdDuplicateCheck = asyncHandler(async (req: Request, res: Response) => {
-
   const { nickname } = req.body;
 
   try {
     const teacherExists = await Teacher.findOne({ nickname });
-
     const studentExists = await Student.findOne({ nickname});
     if (teacherExists || studentExists) {
       res.status(409).json({ message: "The nickname already exists" });

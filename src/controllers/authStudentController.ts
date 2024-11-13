@@ -67,5 +67,4 @@ const authenticateStudent = asyncHandler(async (req: Request, res: Response) => 
   }
 });
 
-
 export { signupStudent, authenticateStudent };
