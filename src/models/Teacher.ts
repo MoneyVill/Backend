@@ -16,12 +16,10 @@ const teacherSchema = new Schema<ITeacher>({
   teacher_id: {
     type: String,
     required: false,
-    unique: true,
   },
   nation_id: {
     type: String,
     required: false,
-    unique: true,
   },
   nickname: {
     type: String,

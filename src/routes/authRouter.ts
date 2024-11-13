@@ -1,19 +1,24 @@
 import express from "express";
 import {
-  registerTeacher,
+  signupTeacher,
   authenticateTeacher,
-  logout,
+  TeacherIdDuplicateCheck
 } from "../controllers/authTeacherController";
 import {
-  registerStudent,
+  signupStudent,
   authenticateStudent,
+  StudentIdDuplicateCheck
 } from "../controllers/authStudentController";
+import { logout } from "../controllers/userController"
+
 const router = express.Router();
 
-router.post("/teacher/register", registerTeacher);
+router.post("/teacher/signup", signupTeacher);
 router.post("/teacher/login", authenticateTeacher);
-router.post("/student/register", registerStudent);
+router.post("/student/signup", signupStudent);
 router.post("/student/login", authenticateStudent);
+router.post("/student/check-duplicate", StudentIdDuplicateCheck);
+router.post("/teacher/check-duplicate", TeacherIdDuplicateCheck);
 router.post("/logout", logout);
 
 export default router;

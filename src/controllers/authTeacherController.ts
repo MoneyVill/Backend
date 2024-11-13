@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import Teacher from "../models/Teacher";
-import { generateToken, clearToken } from "../utils/auth";
+import { generateToken} from "../utils/auth";
 import {
   BadRequestError,
   AuthenticationError,
@@ -8,13 +8,13 @@ import {
 import asyncHandler from "express-async-handler";
 
 
-// Register a new teacher
-const registerTeacher = asyncHandler(async (req: Request, res: Response) => {
-  const { name, nation_id, nickname, password, teacher_id, role } = req.body;
-  const teacherExists = await Teacher.findOne({ nickname });
+// signup a new teacher
+const signupTeacher = asyncHandler(async (req: Request, res: Response) => {
+  const { name, nickname, password, passwordConfirm } = req.body;
 
-  if (teacherExists) {
-    res.status(409).json({ message: "The nickname already exists" });
+  // Check if password and passwordConfirm match
+  if (password !== passwordConfirm) {
+    res.status(400).json({ message: "Passwords do not match" });
     return; // Prevents further execution
   }
 
@@ -34,7 +34,7 @@ const registerTeacher = asyncHandler(async (req: Request, res: Response) => {
       role: teacher.role,
     });
   } else {
-    throw new BadRequestError("An error occurred in registering the teacher");
+    throw new BadRequestError("An error occurred in signuping the teacher");
   }
 });
 
@@ -56,10 +56,18 @@ const authenticateTeacher = asyncHandler(async (req: Request, res: Response) => 
   }
 });
 
-// Logout
-const logout = asyncHandler(async (req: Request, res: Response) => {
-  clearToken(res);
-  res.status(200).json({ message: "Successfully logged out" });
+const TeacherIdDuplicateCheck = asyncHandler(async (req: Request, res: Response) => {
+  const { nickname } = req.body;
+
+  try {
+    const teacherExists = await Teacher.findOne({ nickname });
+    if (teacherExists) {
+      res.status(409).json({ message: "The nickname already exists" });
+      return; // Prevents further execution
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server error while checking nickname", error });
+  }
 });
 
-export { registerTeacher, authenticateTeacher, logout };
+export { signupTeacher, authenticateTeacher, TeacherIdDuplicateCheck};

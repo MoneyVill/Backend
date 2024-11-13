@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import Student from "../models/Student";
 import Teacher from "../models/Teacher";
 import { BadRequestError } from "../middleware/errorMiddleware";
+import { clearToken } from "../utils/auth";
 import asyncHandler from "express-async-handler";
 
 const getUser = asyncHandler(async (req: Request, res: Response) => {
@@ -33,4 +34,10 @@ const getUser = asyncHandler(async (req: Request, res: Response) => {
   res.status(200).json(user);
 });
 
-export { getUser };
+// Logout
+const logout = asyncHandler(async (req: Request, res: Response) => {
+  clearToken(res);
+  res.status(200).json({ message: "Successfully logged out" });
+});
+
+export { getUser, logout };

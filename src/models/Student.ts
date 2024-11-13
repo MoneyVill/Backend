@@ -8,7 +8,7 @@ export interface IStudent extends Document {
   nickname: string;
   password: string;
   name: string;
-  bank_account: number;
+  account: number;
   account_frozen: boolean;
   credit_score: number;
   grade_number: number;
@@ -22,12 +22,10 @@ const studentSchema = new Schema<IStudent>({
   student_id: {
     type: String,
     required: false,
-    unique: true,
   },
   nation_id: {
     type: String,
     required: false,
-    unique: true,
   },
   job_id: {
     type: String,
@@ -46,10 +44,9 @@ const studentSchema = new Schema<IStudent>({
     type: String,
     required: true,
   },
-  bank_account: {
+  account: {
     type: Number,
     required: false,
-    unique: true,
   },
   account_frozen: {
     type: Boolean,
@@ -85,25 +82,9 @@ studentSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
   }
-  // Auto-generate teacher_id if not provided
+  // Auto-generate student_id if not provided
   if (!this.student_id) {
     this.student_id = `STU-${new mongoose.Types.ObjectId().toString()}`;
-  }
-
-  // Auto-generate unique 10-digit account_number if not provided
-  if (!this.bank_account) {
-    let isUnique = false;
-    while (!isUnique) {
-      // Generate a 10-digit number
-      const randomAccountNumber = Math.floor(1000000000 + Math.random() * 9000000000);
-
-      // Check for uniqueness in the database
-      const existingStudent = await mongoose.model("Student").findOne({ bank_account: randomAccountNumber });
-      if (!existingStudent) {
-        this.bank_account = randomAccountNumber;
-        isUnique = true;
-      }
-    }
   }
 
   const salt = await bcrypt.genSalt(10);
