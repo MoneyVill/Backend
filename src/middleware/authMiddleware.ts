@@ -1,8 +1,11 @@
+
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload, TokenExpiredError, JsonWebTokenError } from "jsonwebtoken";
 import Teacher from "../models/Teacher";
-import Student from '../models/Student'; // Adjust path as needed
-import asyncHandler from "express-async-handler";
+
+import Student from "../models/Student";
+// import asyncHandler from "express-async-handler";
+const asyncHandler = require("express-async-handler");
 import { AuthenticationError } from "./errorMiddleware";
 
 // Extend the Request interface to include user property
@@ -22,7 +25,7 @@ const authenticate = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       // Extract token from cookies or Authorization header
-      let token = req.cookies.jwt || req.headers.authorization?.split(' ')[1];
+      let token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
 
       if (!token) {
         throw new AuthenticationError("Token not found");
@@ -35,13 +38,11 @@ const authenticate = asyncHandler(
         throw new AuthenticationError("Invalid token payload");
       }
 
-      let user;
-      if (decoded.role === true) {
-        // Fetch from Student if role is true
-        user = await Student.findById(decoded.userId, "_id name nickname");
-      } else {
-        // Fetch from Teacher if role is false
-        user = await Teacher.findById(decoded.userId, "_id name nickname");
+      // Attempt to find the user in Teacher or Student collections
+      let user = await Teacher.findById(decoded.userId, "_id name nickname role");
+      if (!user) {
+        user = await Student.findById(decoded.userId, "_id name nickname role");
+
       }
 
       if (!user) {
@@ -51,11 +52,11 @@ const authenticate = asyncHandler(
       next();
     } catch (error) {
       if (error instanceof TokenExpiredError) {
-        throw new AuthenticationError("Token expired");
+        return res.status(401).json({ error: "Token expired" });
       } else if (error instanceof JsonWebTokenError) {
-        throw new AuthenticationError("Invalid token format or signature");
+        return res.status(401).json({ error: "Invalid token format or signature" });
       } else {
-        throw new AuthenticationError("Invalid token");
+        return res.status(401).json({ error: error instanceof AuthenticationError ? error.message : "Authentication failed" });
       }
     }
   }
