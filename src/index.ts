@@ -1,5 +1,6 @@
 import express from "express";
 import authRouter from "./routes/authRouter";
+import jobRouter from "./routes/jobRouter";
 import connectUserDB from "./connections/userDB";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -49,6 +50,7 @@ app.listen(port, () => {
 
 app.use(authRouter);
 app.use("/users", authenticate, userRouter);
+app.use(jobRouter);
 
 app.use(errorHandler);
 connectUserDB();

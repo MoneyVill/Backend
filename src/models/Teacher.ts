@@ -52,11 +52,6 @@ teacherSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
   }
-
-  // Auto-generate nation_id if not provided
-  if (!this.nation_id) {
-    this.nation_id = `CTY-${new mongoose.Types.ObjectId().toString()}`;
-  }
   // Auto-generate teacher_id if not provided
   if (!this.teacher_id) {
     this.teacher_id = `TEA-${new mongoose.Types.ObjectId().toString()}`;
