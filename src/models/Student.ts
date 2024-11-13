@@ -3,8 +3,8 @@ import bcrypt from "bcryptjs";
 
 export interface IStudent extends Document {
   student_id: string;
-  nation_id: string;
-  job_id: string;
+  nation_id: string | null; // `null` 허용
+  job_id: string | null; // `null` 허용
   nickname: string;
   password: string;
   name: string;
@@ -26,10 +26,12 @@ const studentSchema = new Schema<IStudent>({
   nation_id: {
     type: String,
     required: false,
-  },
+    default: null,     // 기본값을 `null`로 설정
+  }, 
   job_id: {
     type: String,
     required: false,
+    default: null,     // 기본값을 `null`로 설정
   },
   nickname: {
     type: String,

@@ -3,11 +3,11 @@ import bcrypt from "bcryptjs";
 
 export interface ITeacher extends Document {
   teacher_id: string;
-  nation_id: string;
+  nation_id?: string;
   nickname: string;
   password: string;
   name: string;
-  is_assigned: boolean;
+  is_assigned?: boolean;
   role: boolean;
   comparePassword: (enteredPassword: string) => boolean;
 }
@@ -16,10 +16,12 @@ const teacherSchema = new Schema<ITeacher>({
   teacher_id: {
     type: String,
     required: false,
+    unique: true,
   },
   nation_id: {
     type: String,
     required: false,
+    unique: true,
   },
   nickname: {
     type: String,
