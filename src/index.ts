@@ -1,13 +1,16 @@
 import express from "express";
-import authRouter from "./routes/authRouter";
+
+// import authRouter from "./routes/authRouter";
+// import userRouter from "./routes/userRouter";
+import router from './routes';
+
 import connectUserDB from "./connections/userDB";
 import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
-import userRouter from "./routes/userRouter";
-import { authenticate } from "./middleware/authMiddleware";
+// import { authenticate } from "./middleware/authMiddleware";
 import { errorHandler } from "./middleware/errorMiddleware";
 
 dotenv.config();
@@ -47,8 +50,9 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-app.use(authRouter);
-app.use("/users", authenticate, userRouter);
+// app.use(authRouter);
+// app.use("/users", authenticate, userRouter);
+app.use('/api',router);
 
 app.use(errorHandler);
 connectUserDB();
